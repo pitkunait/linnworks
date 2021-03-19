@@ -3,7 +3,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "stonks": {
+        "linnworks-client": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -17,7 +17,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/stonks",
+                        "outputPath": "dist/linnworks-client",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",
@@ -65,18 +65,18 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "stonks:build"
+                        "browserTarget": "linnworks-client:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "stonks:build:production"
+                            "browserTarget": "linnworks-client:build:production"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "stonks:build"
+                        "browserTarget": "linnworks-client:build"
                     }
                 },
                 "test": {
@@ -113,16 +113,16 @@
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
                         "protractorConfig": "e2e/protractor.conf.js",
-                        "devServerTarget": "stonks:serve"
+                        "devServerTarget": "linnworks-client:serve"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "stonks:serve:production"
+                            "devServerTarget": "linnworks-client:serve:production"
                         }
                     }
                 }
             }
         }
     },
-    "defaultProject": "stonks"
+    "defaultProject": "linnworks-client"
 }
