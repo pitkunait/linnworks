@@ -1,0 +1,10 @@
+version: '3.1'
+services:
+    nginx:
+        image: nginx
+        ports:
+            - "80:80"
+        volumes:
+            - ./dist/stonks/:/usr/share/nginx/html
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        command: [nginx, '-g', 'daemon off;']

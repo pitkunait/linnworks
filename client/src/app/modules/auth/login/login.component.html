@@ -1,0 +1,20 @@
+<mat-card class="signin-content mat-elevation-z4">
+    <mat-card-content>
+        <form (ngSubmit)="onSubmit()" [formGroup]="form">
+            <p>Login to {{appName}}</p>
+            <mat-form-field class="full-width-input">
+                <input formControlName="username" matInput placeholder="Username" required>
+                <mat-error *ngIf="isFieldInvalid('username')">
+                    Username is invalid
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="full-width-input">
+                <input formControlName="password" matInput placeholder="Password" required type="password">
+                <mat-error *ngIf="isFieldInvalid('password')">
+                    Password is invalid
+                </mat-error>
+            </mat-form-field>
+            <button color="primary" mat-raised-button>Login</button>
+        </form>
+    </mat-card-content>
+</mat-card>

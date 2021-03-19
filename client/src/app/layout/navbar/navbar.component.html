@@ -1,0 +1,22 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <a routerLink="">{{appName}}</a>
+        <span class="example-spacer"></span>
+        <span *ngIf="(authService.loggedIn | async); then thenBlock else elseBlock"></span>
+        <ng-template #thenBlock>
+            <button mat-button routerLink="dashboard">
+                <mat-icon>account_circle</mat-icon>
+                Profile
+            </button>
+            <button (click)="authService.logout()" mat-button>
+                <mat-icon>logout</mat-icon>
+                Logout
+            </button>
+        </ng-template>
+        <ng-template #elseBlock>
+            <button mat-button routerLink="/auth/login">Login</button>
+            <button mat-button routerLink="/auth/signup">Signup</button>
+        </ng-template>
+
+    </mat-toolbar-row>
+</mat-toolbar>

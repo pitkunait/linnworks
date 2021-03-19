@@ -1,0 +1,12 @@
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}

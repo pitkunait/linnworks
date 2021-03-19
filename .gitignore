@@ -1,0 +1,7 @@
+node_modules/
+.idea/
+bin/
+obj/
+server/packages/
+riderModule.iml
+server/_ReSharper.Caches/
