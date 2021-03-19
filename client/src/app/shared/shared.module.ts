@@ -6,12 +6,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { RoundPipe } from './pipes/round.pipe';
 import { ChartsModule } from 'ng2-charts';
+import { EnvPipe } from './pipes/env.pipe';
 
 
 @NgModule({
     declarations: [
         MomentPipe,
-        RoundPipe
+        RoundPipe,
+        EnvPipe
     ],
     imports: [
         CommonModule,
@@ -32,7 +34,8 @@ import { ChartsModule } from 'ng2-charts';
 
         // pipes
         MomentPipe,
-        RoundPipe
+        RoundPipe,
+        EnvPipe
     ],
 })
 export class SharedModule {}

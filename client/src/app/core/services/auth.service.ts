@@ -13,8 +13,8 @@ import { UserSignup } from '../interfaces/userSignup.interface';
 })
 export class AuthService {
     public loggedIn = new BehaviorSubject<boolean>(false);
-    private loginUrl = 'token/';
-    private signupUrl = 'register/';
+    private loginUrl = 'auth/login';
+    private signupUrl = 'register';
 
     constructor(
         private router: Router,
@@ -29,7 +29,7 @@ export class AuthService {
     login(user: UserLogin) {
         this.apiService
             .post(this.loginUrl, user)
-            .subscribe(async(res: TokenPair) => {
+            .subscribe(async (res: TokenPair) => {
                 this.tokenService.setTokenPair(res);
                 this.loggedIn.next(true);
                 await this.router.navigate(['/dashboard']);
@@ -43,9 +43,9 @@ export class AuthService {
                 password: user.password,
                 first_name: user.firstName,
                 last_name: user.lastName,
-                email: user.email
+                email: user.email,
             })
-            .subscribe(async(res: any) => {
+            .subscribe(async (res: any) => {
                 await this.router.navigate(['auth/login']);
             });
     }

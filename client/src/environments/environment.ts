@@ -4,9 +4,8 @@
 
 export const environment = {
     production: false,
-    appName: 'StonksTracker',
-    baseUrl: 'https://stonkstracker.herokuapp.com/api/',
-    // baseUrl: 'http://0.0.0.0:8000/api/',
+    appName: 'Sales Records',
+    baseUrl: 'http://localhost:5000/api/',
 };
 
 /*
