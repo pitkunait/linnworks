@@ -5,7 +5,7 @@
 export const environment = {
     production: false,
     appName: 'Sales Records',
-    baseUrl: 'http://localhost:5000/api/',
+    baseUrl: 'http://localhost:5000/api',
 };
 
 /*

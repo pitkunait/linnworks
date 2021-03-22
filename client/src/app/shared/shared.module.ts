@@ -1,17 +1,15 @@
 import { NgModule } from '@angular/core';
-import { MomentPipe } from './pipes/moment.pipe';
 import { AppMaterialModule } from './app-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { RoundPipe } from './pipes/round.pipe';
-import { ChartsModule } from 'ng2-charts';
 import { EnvPipe } from './pipes/env.pipe';
-
+import { AgGridModule } from 'ag-grid-angular';
+import { MatFileUploadModule } from 'angular-material-fileupload';
 
 @NgModule({
     declarations: [
-        MomentPipe,
         RoundPipe,
         EnvPipe
     ],
@@ -21,7 +19,7 @@ import { EnvPipe } from './pipes/env.pipe';
         AppMaterialModule,
         ReactiveFormsModule,
         FormsModule,
-        ChartsModule
+        AgGridModule.withComponents([]),
     ],
     exports: [
         // modules
@@ -30,10 +28,10 @@ import { EnvPipe } from './pipes/env.pipe';
         AppMaterialModule,
         ReactiveFormsModule,
         FormsModule,
-        ChartsModule,
+        AgGridModule,
+        MatFileUploadModule,
 
         // pipes
-        MomentPipe,
         RoundPipe,
         EnvPipe
     ],

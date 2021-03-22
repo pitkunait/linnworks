@@ -3,40 +3,27 @@
     display: flex;
 }
 
-table {
-    width: 100%;
-}
-
 .content {
     padding: 20px;
 }
 
-.total-card {
-    justify-content: space-evenly;
-    align-items: center;
-    display: flex;
-    margin-bottom: 20px;
+.controls-container {
+    justify-content: space-between;
+}
+
+.pages-indicator {
+    align-self: center;
 }
 
 .actions-panel {
     display: flex;
     margin-bottom: 20px;
+
+    > * {
+        margin-right: 10px;
+    }
 }
 
-.total {
-    align-items: center;
-    text-align: center;
-    margin-bottom: 0!important;
-    margin-top: 0!important;
-}
-
-.mat-column-graph {
-    white-space: unset !important;
-    flex: 0 0 10% !important;
-    width: 10% !important;
-    padding-right: 0 !important;
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
+.sales-table {
+    height: 100%;
 }

@@ -20,7 +20,7 @@ export class ApiService {
     }
 
     get(path: string, params: {
-        [param: string]: string | string[];
+        [param: string]: string | string[] ;
     } = {}): Observable<any> {
         return this.http.get(`${environment.baseUrl}${path}`, { params })
             .pipe(catchError(this.formatErrors));

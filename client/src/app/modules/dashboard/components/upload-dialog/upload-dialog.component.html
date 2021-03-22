@@ -1,0 +1,28 @@
+<h1 mat-dialog-title>Upload CSV Sales Records File</h1>
+
+
+
+        <input type="file" #file placeholder="Choose file" (change)="onFileSelect(file.files)" style="display:none;">
+        <button type="button" mat-raised-button color="primary" (click)="file.click()">Select File</button>
+
+
+        <span class="upload" *ngIf="progress > 0">
+          {{progress}}%
+        </span>
+
+    <div>
+        Preview:
+    </div>
+
+    <ag-grid-angular
+        #agGrid
+        class="ag-theme-alpine sales-table"
+        [rowData]="preview"
+        [columnDefs]="columnDefs"
+        rowSelection="multiple"
+    >
+    </ag-grid-angular>
+
+    <button type="button" mat-raised-button color="primary" (click)="uploadFile()">Import File</button>
+
+

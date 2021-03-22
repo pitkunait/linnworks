@@ -1,7 +1,11 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using FastMember;
+using Dapper.Contrib.Extensions;
 
 namespace LinnworksTechTest.Repositories.SalesRecords
 {
@@ -11,12 +15,67 @@ namespace LinnworksTechTest.Repositories.SalesRecords
         {
         }
 
-        public async Task<IEnumerable<SalesRecord>> GetAllAsync()
+        public async Task<PagedResult<SalesRecord>> GetAsync(
+            int page = 1,
+            int pageSize = 100,
+            string sortColumn = "id",
+            string sortDirection = "asc"
+        )
         {
+            var results = new PagedResult<SalesRecord>();
             using (var conn = GetOpenConnection())
             {
-                var sql = "SELECT * from SalesRecords";
-                return await conn.QueryAsync<SalesRecord>(sql);
+                var sql = @"SELECT *
+                            FROM SalesRecords
+                            ORDER BY
+
+                            --          Int
+                                CASE WHEN @SortDirection = 'asc' THEN
+                                         CASE @SortColumn
+                                             WHEN 'id'          THEN Id
+                                             WHEN 'country'     THEN Country
+                                             END
+                                    END,
+                                CASE WHEN @SortDirection = 'desc' THEN
+                                         CASE @SortColumn
+                                             WHEN 'id'          THEN Id
+                                             WHEN 'country'     THEN Country
+                                             END
+                                    END DESC,
+                                     
+                            --          Date
+                                CASE WHEN @SortDirection = 'asc' THEN
+                                         CASE @SortColumn
+                                             WHEN 'orderDate'   THEN OrderDate
+                                             END
+                                    END,
+                                CASE WHEN @SortDirection = 'desc' THEN
+                                         CASE @SortColumn
+                                             WHEN 'orderDate'   THEN OrderDate
+                                             END
+                                END DESC
+                                     
+                            OFFSET @Offset ROWS
+                            FETCH NEXT @PageSize ROWS ONLY;
+                            SELECT COUNT(*)
+                            FROM SalesRecords";
+
+                var multi = await conn.QueryMultipleAsync(sql,
+                    new
+                    {
+                        Offset = (page - 1) * pageSize,
+                        PageSize = pageSize,
+                        SortColumn = sortColumn,
+                        SortDirection = sortDirection
+                    });
+
+                results.Items = multi.Read<SalesRecord>().ToList();
+                results.TotalCount = multi.ReadFirst<int>();
+                results.Page = page;
+                results.PageSize = pageSize;
+                results.HasNext = results.TotalCount > page * pageSize;
+
+                return results;
             }
         }
 
@@ -31,14 +90,21 @@ namespace LinnworksTechTest.Repositories.SalesRecords
             }
         }
 
-        public async Task<SalesRecord> FindAsync(int id)
+        public async Task InsertBulkAsync(IEnumerable<SalesRecord> salesRecords)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = GetOpenBulkInsertConnection())
+            using (var reader = ObjectReader.Create(
+                salesRecords, "Id",
+                "Region", "Country", "ItemType", "SalesChannel", "OrderPriority", "OrderDate", "OrderId",
+                "ShipDate", "UnitsSold", "UnitPrice", "UnitCost", "TotalRevenue", "TotalCost", "TotalProfit"
+            ))
             {
-                var sql = "SELECT * FROM SalesRecords WHERE Id = @Id";
-                var parameters = new DynamicParameters();
-                parameters.Add("@Id", id, DbType.Int32);
-                return await conn.QueryFirstOrDefaultAsync<SalesRecord>(sql, parameters);
+                conn.DestinationTableName = "SalesRecords";
+                conn.EnableStreaming = true;
+                conn.BatchSize = 10000;
+                conn.BulkCopyTimeout = 0;
+                conn.NotifyAfter = 100;
+                await conn.WriteToServerAsync(reader);
             }
         }
 
@@ -90,7 +156,7 @@ namespace LinnworksTechTest.Repositories.SalesRecords
                 return await conn.QueryAsync<SalesRecord>(sql, parameters);
             }
         }
-        
+
         public async Task<IEnumerable<SalesRecord>> FilterByCountry(string country)
         {
             using (var conn = GetOpenConnection())
@@ -101,7 +167,7 @@ namespace LinnworksTechTest.Repositories.SalesRecords
                 return await conn.QueryAsync<SalesRecord>(sql, parameters);
             }
         }
-        
+
         public async Task<IEnumerable<SalesRecord>> FilterByYearAndCountry(string country, int year)
         {
             using (var conn = GetOpenConnection())
@@ -118,17 +184,7 @@ namespace LinnworksTechTest.Repositories.SalesRecords
         {
             using (var conn = GetOpenConnection())
             {
-                var existingEntity = await FindAsync(entityToUpdate.Id);
-                var sql = "UPDATE SalesRecords SET ";
-                var parameters = new DynamicParameters();
-
-                sql += "Name=@Name";
-                parameters.Add("@Name", entityToUpdate.Country, DbType.String);
-
-                sql = sql.TrimEnd(',');
-                sql += " WHERE Id=@Id";
-                parameters.Add("@Id", entityToUpdate.Id, DbType.Int32);
-                await conn.QueryAsync(sql, parameters);
+                await conn.UpdateAsync(entityToUpdate);
             }
         }
     }

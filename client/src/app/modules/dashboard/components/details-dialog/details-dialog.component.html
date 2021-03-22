@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Modify Sales Record</h1>
+<form [formGroup]="form">
+
+    <mat-form-field *ngFor="let field of fields" class="full-width-input">
+        <input formControlName="{{field.name}}" matInput placeholder="{{field.title}}">
+        <mat-error *ngIf="isFieldInvalid(field.name)">
+            {{field.title}} is invalid
+        </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="onModify()">Modify</button>
+</form>

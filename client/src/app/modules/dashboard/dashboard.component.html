@@ -1,84 +1,35 @@
 <div fxFlexFill class="content mat" fxLayout="column">
-
-    <mat-card class="total-card mat-elevation-z8" fxLayout="row">
-
-        <div class="total">
-            <p>Total Invested:</p>
-            <h2>{{totalInvested}}</h2>
+    <div class="controls-container" fxLayout="row">
+        <div class="actions-panel" fxLayout="row">
+            <button mat-raised-button color="primary" (click)="openUploadDialog()">Import Sales Records</button>
+            <button mat-raised-button color="primary" (click)="openModifyDialog()">Modify</button>
+            <button mat-raised-button color="primary" (click)="deleteTransaction()">Delete</button>
         </div>
+        <div class="actions-panel" fxLayout="row">
 
-        <div class="total">
-            <p>Current Value:</p>
-            <h2>{{totalCurrentValue | round:2}}</h2>
+            <button mat-raised-button color="primary" (click)="onPrevPageClick()" *ngIf="page > 1">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+
+            <div class="pages-indicator">
+                Page {{page}} of {{totalPages}}
+            </div>
+
+            <button mat-raised-button color="primary" (click)="onNextPageClick()" *ngIf="hasNext">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
         </div>
-
-        <div class="total">
-            <p>Profit/Loss:</p>
-            <h2>{{lossProfit |round:2}}</h2>
-        </div>
-
-    </mat-card>
-
-    <mat-card class="actions-panel mat-elevation-z8" fxLayout="row">
-
-        <button mat-raised-button color="primary" (click)="openAddDialog()">Add Transaction</button>
-
-    </mat-card>
-
-    <div *ngIf="transactions.length > 0" fxFlex="1">
-        <table mat-table [dataSource]="transactions" class="mat-elevation-z8">
-            <ng-container matColumnDef="asset">
-                <th mat-header-cell *matHeaderCellDef> Asset</th>
-                <td mat-cell *matCellDef="let element"> {{element.asset}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="amountCrypto">
-                <th mat-header-cell *matHeaderCellDef> Amount Crypto</th>
-                <td mat-cell *matCellDef="let element"> {{element.amountCrypto}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="amountCash">
-                <th mat-header-cell *matHeaderCellDef> Amount Currency </th>
-                <td mat-cell *matCellDef="let element"> {{element.amountCash | round:2}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="date">
-                <th mat-header-cell *matHeaderCellDef> Date </th>
-                <td mat-cell *matCellDef="let element"> {{element.dateOfTransfer | date: "YYYY-MM-dd"}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="current">
-                <th mat-header-cell *matHeaderCellDef> Current Value </th>
-                <td mat-cell *matCellDef="let element"> {{element.currentValue | round:2}}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="profitloss">
-                <th mat-header-cell *matHeaderCellDef> Profit/Loss </th>
-                <td mat-cell *matCellDef="let element"> {{element.profitLoss | round:2}}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="delete">
-                <th mat-header-cell *matHeaderCellDef> Profit/Loss </th>
-                <td mat-cell *matCellDef="let element">
-                    <button mat-mini-fab color="warn" (click)="deleteTransaction(element.id)">
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="graph">
-                <th mat-header-cell *matHeaderCellDef> Graph</th>
-                <td mat-cell *matCellDef="let element">
-                    <app-chart [data]="element.timeSeries" [labels]="element.timeStamp"></app-chart>
-                </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
     </div>
 
 
+    <ag-grid-angular
+        #agGrid
+        class="ag-theme-alpine sales-table"
+        [rowData]="salesRecords"
+        [columnDefs]="columnDefs"
+        rowSelection="multiple"
+    >
+    </ag-grid-angular>
 </div>
 
 

@@ -16,5 +16,10 @@ namespace LinnworksTechTest.Repositories
         {
             return new SqlConnection(_connectionString);
         }
+
+        public SqlBulkCopy GetOpenBulkInsertConnection()
+        {
+            return new SqlBulkCopy(_connectionString);
+        }
     }
 }
