@@ -1,16 +1,16 @@
 using System;
 using System.Text;
-using LinnworksTechTest.Authentication;
-using LinnworksTechTest.Repositories.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Server.Authentication;
 using Server.Repositories.SalesRecords;
+using Server.Repositories.Users;
 using Server.Services;
 
 namespace Server
@@ -34,8 +34,8 @@ namespace Server
             var dbPass = Configuration["DBPASS"] ?? "Strong(!)Password1";
             var dbDatabase = Configuration["DBDATABASE"] ?? "master";
             var connectionSting = $"Server={dbHost},{dbPort};Database={dbDatabase};User={dbUser};Password={dbPass};";
-            services.AddTransient(_ => new SalesRecordsRepository(connectionSting));
-            services.AddTransient(_ => new UserRepository(connectionSting));
+            services.AddTransient<ISalesRecordsRepository>(_ => new SalesRecordsRepository(connectionSting));
+            services.AddTransient<IUserRepository>(_ => new UserRepository(connectionSting));
 
             var jwtTokenConfig = Configuration.GetSection("jwtTokenConfig").Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
@@ -62,8 +62,9 @@ namespace Server
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddHostedService<JwtRefreshTokenCache>();
             services.AddScoped<IUserService, UserService>();
-            
-            services.AddTransient<SalesRecordsService>();
+
+            services.AddTransient<ISalesRecordsService, SalesRecordsService>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
           
             
             services.AddCors(options =>

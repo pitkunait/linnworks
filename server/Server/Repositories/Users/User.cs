@@ -1,6 +1,6 @@
 using Dapper.Contrib.Extensions;
 
-namespace LinnworksTechTest.Repositories.Users
+namespace Server.Repositories.Users
 {
     public class User
     {

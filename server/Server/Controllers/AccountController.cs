@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using LinnworksTechTest.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -22,12 +22,15 @@ namespace Server.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IJwtAuthManager _jwtAuthManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager)
+        public AccountController(ILogger<AccountController> logger, IUserService userService, IJwtAuthManager jwtAuthManager, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _userService = userService;
             _jwtAuthManager = jwtAuthManager;
+            _httpContextAccessor = httpContextAccessor;
+
         }
 
         [AllowAnonymous]
@@ -105,8 +108,8 @@ namespace Server.Controllers
             return Ok();
         }
 
-        [HttpPost("refresh-token")]
-        [Authorize]
+        [HttpPost("refresh")]
+        [AllowAnonymous]
         public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
             try
@@ -118,9 +121,10 @@ namespace Server.Controllers
                 {
                     return Unauthorized();
                 }
+                string header = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+                header = header.Remove(0, 7);
 
-                var accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                var jwtResult = _jwtAuthManager.Refresh(request.RefreshToken, accessToken, DateTime.Now);
+                var jwtResult = _jwtAuthManager.Refresh(request.RefreshToken, header, DateTime.Now);
                 _logger.LogInformation($"User [{userName}] has refreshed JWT token.");
                 return Ok(new LoginResult
                 {
@@ -132,7 +136,7 @@ namespace Server.Controllers
             }
             catch (SecurityTokenException e)
             {
-                return Unauthorized(e.Message); // return 401 so that the client side can redirect the user to login page
+                return Unauthorized(e.Message);
             }
         }
 

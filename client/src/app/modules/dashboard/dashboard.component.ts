@@ -5,6 +5,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { DetailsDialogComponent } from './components/details-dialog/details-dialog.component';
 import { AgGridAngular } from 'ag-grid-angular';
 import { UploadDialogComponent } from './components/upload-dialog/upload-dialog.component';
+import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { TokenService } from '../../core/services/token.service';
 
 
 @Component({
@@ -42,7 +45,7 @@ export class DashboardComponent implements OnInit {
 
     constructor(
         public salesRecordsService: SalesRecordsService,
-        public dialog: MatDialog,
+        public dialog: MatDialog
     ) { }
 
     async ngOnInit() {

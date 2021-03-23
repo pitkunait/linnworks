@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using Dapper;
-using Server.Repositories;
 
-namespace LinnworksTechTest.Repositories.Users
+namespace Server.Repositories.Users
 {
-    public class UserRepository : SqlConnectionProvider
+    public class UserRepository : SqlConnectionProvider, IUserRepository
     {
 
         public UserRepository(string connectionString) : base(connectionString)

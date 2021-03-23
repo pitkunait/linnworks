@@ -4,19 +4,18 @@ using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CsvHelper;
-using LinnworksTechTest.Repositories;
 using Microsoft.AspNetCore.Http;
 using Server.Repositories;
 using Server.Repositories.SalesRecords;
 
 namespace Server.Services
 {
-    public class SalesRecordsService
+    public class SalesRecordsService : ISalesRecordsService
     {
-        private readonly SalesRecordsRepository _recordsRepository;
+        private readonly ISalesRecordsRepository _recordsRepository;
 
 
-        public SalesRecordsService(SalesRecordsRepository recordsRepository)
+        public SalesRecordsService(ISalesRecordsRepository recordsRepository)
         {
             _recordsRepository = recordsRepository;
         }
@@ -26,16 +25,12 @@ namespace Server.Services
             string direction = "asc",
             string country = null,
             int? year = null,
+            int pageSize = 100,
             int page = 1)
         {
             PagedResult<SalesRecord> salesRecords;
 
-            salesRecords = await _recordsRepository.GetAsync(
-                page, 
-                sortColumn: sortBy, 
-                sortDirection: direction,
-                country:country, 
-                year:year);
+            salesRecords = await _recordsRepository.GetAsync( page, pageSize,sortBy, direction,country, year);
 
             return salesRecords;
         }
@@ -68,7 +63,7 @@ namespace Server.Services
             await _recordsRepository.UpdateAsync(salesRecord);
         }
 
-        public async Task<object> UploadCSV(IFormFile file)
+        public async Task<object> UploadCsv(IFormFile file)
         {
             var folderName = Path.Combine("Resources", "Uploads");
             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);

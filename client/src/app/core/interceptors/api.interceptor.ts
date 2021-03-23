@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { TokenService } from '../services/token.service';
-import { catchError, filter, finalize, switchMap, take } from 'rxjs/operators';
+import { catchError, filter, finalize, switchMap, take, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 
@@ -14,10 +14,11 @@ export class ApiInterceptor implements HttpInterceptor {
     private refreshTokenInProgress = false;
     private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-    constructor(private tokenService: TokenService, private httpClient: HttpClient) {}
+    constructor(private tokenService: TokenService, private httpClient: HttpClient) {
+
+    }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): any {
-
         req = this.addAuthenticationToken(req);
 
         return next
@@ -36,7 +37,7 @@ export class ApiInterceptor implements HttpInterceptor {
                             this.refreshTokenSubject.next(null);
                             return this.refreshAccessToken().pipe(
                                 switchMap((res: any) => {
-                                    this.tokenService.setAccessToken(res.access);
+                                    this.tokenService.setAccessToken(res.accessToken);
                                     this.refreshTokenSubject.next(res);
                                     return next.handle(this.addAuthenticationToken(req));
                                 }),
@@ -50,9 +51,9 @@ export class ApiInterceptor implements HttpInterceptor {
             );
     }
 
-    private refreshAccessToken(): Observable<any> {
+    public refreshAccessToken(): Observable<any> {
         return this.httpClient
-            .post(`${environment.baseUrl}/auth/refresh/`, { refresh: this.tokenService.getRefreshToken() });
+            .post(`${environment.baseUrl}/auth/refresh/`, { refreshToken: this.tokenService.getRefreshToken() });
     }
 
     private addAuthenticationToken(request: HttpRequest<any>): HttpRequest<any> {
@@ -62,7 +63,7 @@ export class ApiInterceptor implements HttpInterceptor {
         if (request.url.match(environment.baseUrl)) {
             return request.clone({
                 headers: request.headers
-                    .append(this.AUTH_HEADER, 'Bearer ' + this.tokenService.getAccessToken()),
+                    .set(this.AUTH_HEADER, 'Bearer ' + this.tokenService.getAccessToken()),
             });
         }
 

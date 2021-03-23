@@ -7,7 +7,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
-using LinnworksTechTest.Authentication;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Server.Authentication
@@ -117,8 +116,8 @@ namespace Server.Authentication
                         IssuerSigningKey = new SymmetricSecurityKey(_secret),
                         ValidAudience = _jwtTokenConfig.Audience,
                         ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(1)
+                        ValidateLifetime = false,
+                        ClockSkew = TimeSpan.FromMinutes(15)
                     },
                     out var validatedToken);
             return (principal, validatedToken as JwtSecurityToken);

@@ -2,6 +2,7 @@ import { EventEmitter, Injectable, Output } from '@angular/core';
 import { SalesRecord } from '../../../core/interfaces/salesRecord';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { TokenService } from '../../../core/services/token.service';
 
 
 interface SalesRecordsResponse {
@@ -22,7 +23,7 @@ export class SalesRecordsService {
     public country = '';
     public year = '';
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private tokenService: TokenService) { }
 
     @Output() shouldUpdate = new EventEmitter();
     public isBusy = false;

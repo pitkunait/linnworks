@@ -13,9 +13,9 @@ namespace Server.Controllers
     [Route("api/sales")]
     public class SalesRecordsController : ControllerBase
     {
-        private readonly SalesRecordsService _salesRecordsService;
+        private readonly ISalesRecordsService _salesRecordsService;
 
-        public SalesRecordsController(SalesRecordsService salesService)
+        public SalesRecordsController(ISalesRecordsService salesService)
         {
             _salesRecordsService = salesService;
         }
@@ -26,12 +26,13 @@ namespace Server.Controllers
             [FromQuery] string direction,
             [FromQuery] string country,
             [FromQuery] int? year,
+            [FromQuery] int pageSize = 100,
             [FromQuery] int page = 1
         )
         {
             try
             {
-                var salesRecords = await _salesRecordsService.ListAllRecords(sortBy, direction, country, year, page);
+                var salesRecords = await _salesRecordsService.ListAllRecords(sortBy, direction, country, year, pageSize, page);
                 return Ok(salesRecords);
             }
             catch (Exception ex)
@@ -61,7 +62,7 @@ namespace Server.Controllers
             try
             {
                 var file = Request.Form.Files[0];
-                var result = await _salesRecordsService.UploadCSV(file);
+                var result = await _salesRecordsService.UploadCsv(file);
                 return Ok(result);
             }
             catch (Exception ex)

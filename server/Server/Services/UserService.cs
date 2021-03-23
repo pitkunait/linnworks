@@ -1,23 +1,15 @@
 using System.Threading.Tasks;
-using LinnworksTechTest.Repositories.Users;
 using Microsoft.Extensions.Logging;
+using Server.Repositories.Users;
 
 namespace Server.Services
 {
-    public interface IUserService
-    {
-        Task<bool> IsAnExistingUser(string userName);
-        Task<bool> IsValidUserCredentials(string userName, string password);
-        Task<string> GetUserRole(string userName);
-        Task CreateUser(string user, string pass);
-    }
-
     public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(ILogger<UserService> logger, UserRepository userRepository)
+        public UserService(ILogger<UserService> logger, IUserRepository userRepository)
         {
             _logger = logger;
             _userRepository = userRepository;

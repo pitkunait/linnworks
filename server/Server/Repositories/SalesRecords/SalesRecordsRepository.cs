@@ -8,7 +8,7 @@ using FastMember;
 
 namespace Server.Repositories.SalesRecords
 {
-    public class SalesRecordsRepository : SqlConnectionProvider
+    public class SalesRecordsRepository : SqlConnectionProvider, ISalesRecordsRepository
     {
         public SalesRecordsRepository(string connectionString) : base(connectionString)
         {
