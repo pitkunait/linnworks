@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Net.Http.Headers;
@@ -21,25 +22,21 @@ namespace LinnworksTechTest.Services
             _recordsRepository = recordsRepository;
         }
 
-        public async Task<PagedResult<SalesRecord>> ListAllRecords(string country, int? year, int page = 1)
+        public async Task<PagedResult<SalesRecord>> ListAllRecords(
+            string sortBy = "id",
+            string direction = "asc",
+            string country = null,
+            int? year = null,
+            int page = 1)
         {
             PagedResult<SalesRecord> salesRecords;
-            // if (country != null & year != null)
-            // {
-            //     salesRecords = await _recordsRepository.FilterByYearAndCountry(country, year.Value);
-            // }
-            // else if (country != null)
-            // {
-            //     salesRecords = await _recordsRepository.FilterByCountry(country);
-            // }
-            // else if (year != null)
-            // {
-            //     salesRecords = await _recordsRepository.FilterByYearAsync(year.Value);
-            // }
-            // else
-            // {
-            salesRecords = await _recordsRepository.GetAsync(page);
-            // }
+
+            salesRecords = await _recordsRepository.GetAsync(
+                page, 
+                sortColumn: sortBy, 
+                sortDirection: direction,
+                country:country, 
+                year:year);
 
             return salesRecords;
         }
@@ -47,6 +44,11 @@ namespace LinnworksTechTest.Services
         public async Task InsertRecords(List<SalesRecord> salesRecords)
         {
             await _recordsRepository.InsertAsync(salesRecords);
+        }
+        
+        public async Task<IEnumerable<string>> GetAllCountries()
+        {
+            return await _recordsRepository.GetAllCountries();
         }
 
         public async Task InsertBulkRecords(string path)
@@ -57,9 +59,9 @@ namespace LinnworksTechTest.Services
             await _recordsRepository.InsertBulkAsync(records);
         }
 
-        public async Task DeleteRecord(int id)
+        public async Task DeleteRecord(List<int> idList)
         {
-            await _recordsRepository.DeleteAsync(id);
+            await _recordsRepository.DeleteAsync(idList);
         }
 
         public async Task UpdateRecord(SalesRecord salesRecord)

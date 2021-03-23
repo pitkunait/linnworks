@@ -7,18 +7,17 @@ import { DetailsDialogComponent } from './components/details-dialog/details-dial
 import { UploadDialogComponent } from './components/upload-dialog/upload-dialog.component';
 
 
-
 @NgModule({
     declarations: [
         DashboardComponent,
         DetailsDialogComponent,
-        UploadDialogComponent
+        UploadDialogComponent,
     ],
     imports: [
         RouterModule.forChild(dashboardRoutes),
         SharedModule,
     ],
-    bootstrap: [DashboardComponent]
+    bootstrap: [DashboardComponent],
 })
 export class DashboardModule {}
 

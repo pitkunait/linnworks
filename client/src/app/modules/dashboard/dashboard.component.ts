@@ -16,36 +16,58 @@ export class DashboardComponent implements OnInit {
     @ViewChild('agGrid') agGrid: AgGridAngular;
 
     salesRecords: SalesRecord[] = [];
-
     page = 1;
     hasNext = false;
     totalPages = 0;
-
+    totalCount = 0;
+    totalProfit = 0;
+    countries = [];
     columnDefs = [
-        { field: 'region', sortable: true, filter: true, checkboxSelection: true },
-        { field: 'country', sortable: true, filter: true },
-        { field: 'itemType', sortable: true, filter: true },
-        { field: 'salesChannel', sortable: true, filter: true },
-        { field: 'orderPriority', sortable: true, filter: true },
-        { field: 'orderDate', sortable: true, filter: true },
-        { field: 'orderId', sortable: true, filter: true },
-        { field: 'shipDate', sortable: true, filter: true },
-        { field: 'unitsSold', sortable: true, filter: true },
-        { field: 'unitPrice', sortable: true, filter: true },
-        { field: 'unitCost', sortable: true, filter: true },
-        { field: 'totalRevenue', sortable: true, filter: true },
-        { field: 'totalCost', sortable: true, filter: true },
-        { field: 'totalProfit', sortable: true, filter: true },
+        { field: 'region', checkboxSelection: true },
+        { field: 'country' },
+        { field: 'itemType' },
+        { field: 'salesChannel' },
+        { field: 'orderPriority' },
+        { field: 'orderDate', sortable: true },
+        { field: 'orderId' },
+        { field: 'shipDate' },
+        { field: 'unitsSold' },
+        { field: 'unitPrice' },
+        { field: 'unitCost' },
+        { field: 'totalRevenue' },
+        { field: 'totalCost' },
+        { field: 'totalProfit' },
     ];
 
+
     constructor(
-        private salesRecordsService: SalesRecordsService,
+        public salesRecordsService: SalesRecordsService,
         public dialog: MatDialog,
     ) { }
 
     async ngOnInit() {
         await this.loadRecords(1);
         this.salesRecordsService.shouldUpdate.subscribe(_ => this.loadRecords(1));
+        this.agGrid.sortChanged.subscribe(_ => {
+            const sort = this.agGrid.api.getSortModel()[0];
+            if (sort) {
+                this.salesRecordsService.sortBy = sort.colId;
+                this.salesRecordsService.direction = sort.sort;
+            } else {
+                this.salesRecordsService.sortBy = 'id';
+                this.salesRecordsService.direction = 'asc';
+            }
+            this.loadRecords(this.page);
+        });
+        this.countries = await this.salesRecordsService.getCountries();
+    }
+
+    onCountryChange(country: string) {
+        this.salesRecordsService.country = country;
+    }
+
+    onYearChange(event: Event) {
+        this.salesRecordsService.year = (event.target as HTMLInputElement).value;
     }
 
     async loadRecords(page: number) {
@@ -53,15 +75,22 @@ export class DashboardComponent implements OnInit {
         this.salesRecords = response.items;
         this.page = response.page;
         this.hasNext = response.hasNext;
+        this.totalProfit = response.totalProfit;
+        this.totalCount = response.totalCount;
         this.totalPages = Math.ceil(response.totalCount / response.pageSize);
     }
 
     async onNextPageClick() {
-        await this.loadRecords(this.page + 1);
+        if (!this.salesRecordsService.isBusy) {
+            await this.loadRecords(this.page + 1);
+        }
+
     }
 
     async onPrevPageClick() {
-        await this.loadRecords(this.page - 1);
+        if (!this.salesRecordsService.isBusy) {
+            await this.loadRecords(this.page - 1);
+        }
     }
 
     openModifyDialog(): void {
@@ -79,9 +108,7 @@ export class DashboardComponent implements OnInit {
     async deleteTransaction() {
         const selectedNodes = this.agGrid.api.getSelectedNodes();
         const selectedData = selectedNodes.map(node => node.data);
-        if (selectedData.length > 0) {
-            selectedData.forEach(i => this.salesRecordsService.deleteSalesRecord(i.id));
-        }
+        await this.salesRecordsService.deleteSalesRecord(selectedData.map(i => String(i.id)));
     }
 }
 

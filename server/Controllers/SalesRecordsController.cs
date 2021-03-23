@@ -21,6 +21,8 @@ namespace LinnworksTechTest.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Get(
+            [FromQuery] string sortBy,
+            [FromQuery] string direction,
             [FromQuery] string country,
             [FromQuery] int? year,
             [FromQuery] int page = 1
@@ -28,7 +30,7 @@ namespace LinnworksTechTest.Controllers
         {
             try
             {
-                var salesRecords = await _salesRecordsService.ListAllRecords(country, year, page);
+                var salesRecords = await _salesRecordsService.ListAllRecords(sortBy, direction, country, year, page);
                 return Ok(salesRecords);
             }
             catch (Exception ex)
@@ -96,13 +98,29 @@ namespace LinnworksTechTest.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery]List<int> id)
+        {
+            Console.Write(id);
+            try
+            {
+                
+                await _salesRecordsService.DeleteRecord(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex}");
+            }
+        }
+        [HttpGet("countries")]
+        public async Task<IActionResult> GetCountries()
         {
             try
             {
-                await _salesRecordsService.DeleteRecord(id);
-                return Ok();
+                
+                var result = await _salesRecordsService.GetAllCountries();
+                return Ok(result);
             }
             catch (Exception ex)
             {

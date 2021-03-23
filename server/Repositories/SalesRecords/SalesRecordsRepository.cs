@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -19,7 +19,9 @@ namespace LinnworksTechTest.Repositories.SalesRecords
             int page = 1,
             int pageSize = 100,
             string sortColumn = "id",
-            string sortDirection = "asc"
+            string sortDirection = "asc",
+            string country = null,
+            int? year = null
         )
         {
             var results = new PagedResult<SalesRecord>();
@@ -27,9 +29,10 @@ namespace LinnworksTechTest.Repositories.SalesRecords
             {
                 var sql = @"SELECT *
                             FROM SalesRecords
+                            WHERE (@Country IS NULL OR Country = @Country) AND (@Year IS NULL OR YEAR(OrderDate) = @Year)
                             ORDER BY
 
-                            --          Int
+                                --          Int
                                 CASE WHEN @SortDirection = 'asc' THEN
                                          CASE @SortColumn
                                              WHEN 'id'          THEN Id
@@ -42,8 +45,8 @@ namespace LinnworksTechTest.Repositories.SalesRecords
                                              WHEN 'country'     THEN Country
                                              END
                                     END DESC,
-                                     
-                            --          Date
+
+                                --          Date
                                 CASE WHEN @SortDirection = 'asc' THEN
                                          CASE @SortColumn
                                              WHEN 'orderDate'   THEN OrderDate
@@ -53,12 +56,17 @@ namespace LinnworksTechTest.Repositories.SalesRecords
                                          CASE @SortColumn
                                              WHEN 'orderDate'   THEN OrderDate
                                              END
-                                END DESC
-                                     
+                                    END DESC
                             OFFSET @Offset ROWS
                             FETCH NEXT @PageSize ROWS ONLY;
+                           
                             SELECT COUNT(*)
-                            FROM SalesRecords";
+                            FROM SalesRecords
+                            WHERE (@Country IS NULL OR Country = @Country) AND (@Year IS NULL OR YEAR(OrderDate) = @Year);
+                            
+                            SELECT SUM(TotalProfit)
+                            FROM SalesRecords
+                            WHERE (@Country IS NULL OR Country = @Country) AND (@Year IS NULL OR YEAR(OrderDate) = @Year)";
 
                 var multi = await conn.QueryMultipleAsync(sql,
                     new
@@ -66,11 +74,14 @@ namespace LinnworksTechTest.Repositories.SalesRecords
                         Offset = (page - 1) * pageSize,
                         PageSize = pageSize,
                         SortColumn = sortColumn,
-                        SortDirection = sortDirection
+                        SortDirection = sortDirection,
+                        Country = country,
+                        Year = year
                     });
 
                 results.Items = multi.Read<SalesRecord>().ToList();
                 results.TotalCount = multi.ReadFirst<int>();
+                results.TotalProfit = multi.ReadFirst<float>();
                 results.Page = page;
                 results.PageSize = pageSize;
                 results.HasNext = results.TotalCount > page * pageSize;
@@ -79,14 +90,21 @@ namespace LinnworksTechTest.Repositories.SalesRecords
             }
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<IEnumerable<string>> GetAllCountries()
         {
             using (var conn = GetOpenConnection())
             {
-                var sql = "DELETE FROM SalesRecords WHERE Id = @Id";
-                var parameters = new DynamicParameters();
-                parameters.Add("@Id", id, DbType.Int32);
-                await conn.QueryFirstOrDefaultAsync<SalesRecord>(sql, parameters);
+                var sql = "SELECT DISTINCT Country FROM SalesRecords";
+                return await conn.QueryAsync<string>(sql);
+            }
+        }
+        
+        public async Task DeleteAsync(List<int> idList)
+        {
+            using (var conn = GetOpenConnection())
+            {
+                var sql = "DELETE FROM SalesRecords WHERE Id IN @idList";
+                await conn.ExecuteAsync(sql, new {idList});
             }
         }
 
@@ -151,9 +169,7 @@ namespace LinnworksTechTest.Repositories.SalesRecords
             using (var conn = GetOpenConnection())
             {
                 var sql = "SELECT * FROM SalesRecords WHERE YEAR(OrderDate) = @Year";
-                var parameters = new DynamicParameters();
-                parameters.Add("@Year", year, DbType.Int32);
-                return await conn.QueryAsync<SalesRecord>(sql, parameters);
+                return await conn.QueryAsync<SalesRecord>(sql, new {Year = year});
             }
         }
 
@@ -162,9 +178,7 @@ namespace LinnworksTechTest.Repositories.SalesRecords
             using (var conn = GetOpenConnection())
             {
                 var sql = "SELECT * FROM SalesRecords WHERE Country = @Country";
-                var parameters = new DynamicParameters();
-                parameters.Add("@Country", country, DbType.String);
-                return await conn.QueryAsync<SalesRecord>(sql, parameters);
+                return await conn.QueryAsync<SalesRecord>(sql, new {Country = country});
             }
         }
 
@@ -173,10 +187,7 @@ namespace LinnworksTechTest.Repositories.SalesRecords
             using (var conn = GetOpenConnection())
             {
                 var sql = "SELECT * FROM SalesRecords WHERE YEAR(OrderDate) = @Year AND Country = @Country";
-                var parameters = new DynamicParameters();
-                parameters.Add("@Year", year, DbType.Int32);
-                parameters.Add("@Country", country, DbType.String);
-                return await conn.QueryAsync<SalesRecord>(sql, parameters);
+                return await conn.QueryAsync<SalesRecord>(sql, new {Year = year, Country = country});
             }
         }
 

@@ -10,19 +10,35 @@ interface SalesRecordsResponse {
     page: number;
     pageSize: number;
     totalCount: number;
+    totalProfit: number;
 }
 
 
 @Injectable({ providedIn: 'root' })
 export class SalesRecordsService {
     private url = 'sales';
+    public sortBy = 'id';
+    public direction = 'asc';
+    public country = '';
+    public year = '';
 
     constructor(private http: HttpClient) { }
 
     @Output() shouldUpdate = new EventEmitter();
+    public isBusy = false;
 
     async getSalesRecords(page: number = 1): Promise<SalesRecordsResponse> {
-        const records = await this.http.get(`${environment.baseUrl}/sales`, { params: { page: page.toString() } }).toPromise();
+        this.isBusy = true;
+        const records = await this.http.get(`${environment.baseUrl}/sales`, {
+            params: {
+                page: page.toString(),
+                sortBy: this.sortBy,
+                direction: this.direction,
+                country: this.country,
+                year: this.year,
+            },
+        }).toPromise();
+        this.isBusy = false;
         return records as SalesRecordsResponse;
     }
 
@@ -38,16 +54,23 @@ export class SalesRecordsService {
     uploadFile(file) {
         const formData = new FormData();
         formData.append('file', file, file.name);
-        return this.http.post('http://localhost:5000/api/sales/upload', formData, { reportProgress: true, observe: 'events' });
+        return this.http.post(`${environment.baseUrl}/sales/upload`, formData, {
+            reportProgress: true,
+            observe: 'events',
+        });
     }
 
     async importFile(fileName) {
-        await this.http.get('http://localhost:5000/api/sales/import', {params: {path: fileName}}).toPromise();
+        await this.http.get(`${environment.baseUrl}/sales/import`, { params: { path: fileName } }).toPromise();
         this.shouldUpdate.emit();
     }
 
-    async deleteSalesRecord(id: number) {
-        await this.http.delete(`${environment.baseUrl}/sales/${id}`).toPromise();
+    async getCountries() {
+        return await this.http.get(`${environment.baseUrl}/sales/countries`).toPromise() as string[];
+    }
+
+    async deleteSalesRecord(id: string[]) {
+        await this.http.delete(`${environment.baseUrl}/sales`, { params: { id } }).toPromise();
         this.shouldUpdate.emit();
     }
 

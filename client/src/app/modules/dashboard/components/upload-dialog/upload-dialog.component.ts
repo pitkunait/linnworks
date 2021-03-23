@@ -21,20 +21,20 @@ export class UploadDialogComponent implements OnInit {
     @Output() public uploadFinished = new EventEmitter();
 
     columnDefs = [
-        { field: 'region', sortable: true, filter: true },
-        { field: 'country', sortable: true, filter: true },
-        { field: 'itemType', sortable: true, filter: true },
-        { field: 'salesChannel', sortable: true, filter: true },
-        { field: 'orderPriority', sortable: true, filter: true },
-        { field: 'orderDate', sortable: true, filter: true },
-        { field: 'orderId', sortable: true, filter: true },
-        { field: 'shipDate', sortable: true, filter: true },
-        { field: 'unitsSold', sortable: true, filter: true },
-        { field: 'unitPrice', sortable: true, filter: true },
-        { field: 'unitCost', sortable: true, filter: true },
-        { field: 'totalRevenue', sortable: true, filter: true },
-        { field: 'totalCost', sortable: true, filter: true },
-        { field: 'totalProfit', sortable: true, filter: true },
+        { field: 'region' },
+        { field: 'country' },
+        { field: 'itemType' },
+        { field: 'salesChannel' },
+        { field: 'orderPriority' },
+        { field: 'orderDate' },
+        { field: 'orderId' },
+        { field: 'shipDate' },
+        { field: 'unitsSold' },
+        { field: 'unitPrice' },
+        { field: 'unitCost' },
+        { field: 'totalRevenue' },
+        { field: 'totalCost' },
+        { field: 'totalProfit' },
     ];
 
     constructor(
@@ -61,7 +61,7 @@ export class UploadDialogComponent implements OnInit {
                     this.dialogRef.close();
                 }
             });
-    }
+    };
 
 
     async onFileSelect(files) {
