@@ -37,8 +37,8 @@ export class TokenService {
     }
 
     setTokenPair(tokenPair: TokenPair) {
-        this.setRefreshToken(tokenPair.refresh);
-        this.setAccessToken(tokenPair.access);
+        this.setRefreshToken(tokenPair.refreshToken);
+        this.setAccessToken(tokenPair.accessToken);
     }
 
     deleteTokens() {

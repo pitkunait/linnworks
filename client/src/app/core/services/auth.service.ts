@@ -4,8 +4,9 @@ import { Router } from '@angular/router';
 import { UserLogin } from '../interfaces/userLogin.interface';
 import { TokenService } from './token.service';
 import { TokenPair } from '../interfaces/tokenPair.interface';
-import { ApiService } from './api.service';
 import { UserSignup } from '../interfaces/userSignup.interface';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
@@ -13,13 +14,11 @@ import { UserSignup } from '../interfaces/userSignup.interface';
 })
 export class AuthService {
     public loggedIn = new BehaviorSubject<boolean>(false);
-    private loginUrl = 'auth/login';
-    private signupUrl = 'register';
 
     constructor(
         private router: Router,
         private tokenService: TokenService,
-        private apiService: ApiService,
+        private http: HttpClient,
     ) {
         if (this.tokenService.hasToken()) {
             this.loggedIn.next(true);
@@ -27,8 +26,8 @@ export class AuthService {
     }
 
     login(user: UserLogin) {
-        this.apiService
-            .post(this.loginUrl, user)
+        this.http
+            .post(`${environment.baseUrl}/auth/login`, user)
             .subscribe(async (res: TokenPair) => {
                 this.tokenService.setTokenPair(res);
                 this.loggedIn.next(true);
@@ -37,8 +36,8 @@ export class AuthService {
     }
 
     signup(user: UserSignup) {
-        this.apiService
-            .post(this.signupUrl, {
+        this.http
+            .post(`${environment.baseUrl}/auth/signup`, {
                 username: user.username,
                 password: user.password,
                 first_name: user.firstName,

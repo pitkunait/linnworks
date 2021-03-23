@@ -22,3 +22,16 @@ IF NOT EXISTS(SELECT *
             TotalProfit   DECIMAL(25, 2) NOT NULL,
         )
     END;
+
+IF NOT EXISTS(SELECT *
+              FROM sys.objects
+              WHERE object_id = OBJECT_ID(N'dbo.Users')
+                AND type in (N'U'))
+    BEGIN
+        CREATE TABLE Users
+        (
+            Id              INT            NOT NULL IDENTITY PRIMARY KEY,
+            Username        VARCHAR(50)    NOT NULL UNIQUE ,
+            Password        VARCHAR(50)    NOT NULL,
+        )
+    END;

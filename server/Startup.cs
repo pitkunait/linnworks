@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using LinnworksTechTest.Authentication;
 using LinnworksTechTest.Repositories.SalesRecords;
+using LinnworksTechTest.Repositories.Users;
 using LinnworksTechTest.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +34,7 @@ namespace LinnworksTechTest
             var dbDatabase = Configuration["DBDATABASE"] ?? "master";
             var connectionSting = $"Server={dbHost},{dbPort};Database={dbDatabase};User={dbUser};Password={dbPass};";
             services.AddTransient(_ => new SalesRecordsRepository(connectionSting));
+            services.AddTransient(_ => new UserRepository(connectionSting));
 
             var jwtTokenConfig = Configuration.GetSection("jwtTokenConfig").Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);

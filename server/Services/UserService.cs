@@ -1,33 +1,31 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using LinnworksTechTest.Controllers;
+using LinnworksTechTest.Repositories.Users;
 using Microsoft.Extensions.Logging;
 
 namespace LinnworksTechTest.Services
 {
     public interface IUserService
     {
-        bool IsAnExistingUser(string userName);
-        bool IsValidUserCredentials(string userName, string password);
-        string GetUserRole(string userName);
+        Task<bool> IsAnExistingUser(string userName);
+        Task<bool> IsValidUserCredentials(string userName, string password);
+        Task<string> GetUserRole(string userName);
+        Task CreateUser(string user, string pass);
     }
 
     public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
+        private readonly UserRepository _userRepository;
 
-
-        private readonly IDictionary<string, string> _users = new Dictionary<string, string>
-        {
-            { "test1", "password1" },
-            { "test2", "password2" },
-            { "admin", "securePassword" }
-        };
-        // inject your database here for user validation
-        public UserService(ILogger<UserService> logger)
+        public UserService(ILogger<UserService> logger, UserRepository userRepository)
         {
             _logger = logger;
+            _userRepository = userRepository;
         }
 
-        public bool IsValidUserCredentials(string userName, string password)
+        public async Task<bool> IsValidUserCredentials(string userName, string password)
         {
             _logger.LogInformation($"Validating user [{userName}]");
             if (string.IsNullOrWhiteSpace(userName))
@@ -40,17 +38,25 @@ namespace LinnworksTechTest.Services
                 return false;
             }
 
-            return _users.TryGetValue(userName, out var p) && p == password;
+            var user = await _userRepository.FindAsync(userName);
+            return user != null && user.Password == password;
         }
 
-        public bool IsAnExistingUser(string userName)
+        public async Task<bool> IsAnExistingUser(string userName)
         {
-            return _users.ContainsKey(userName);
+            var user = await _userRepository.FindAsync(userName);
+            return user != null;
         }
-
-        public string GetUserRole(string userName)
+        
+        public async Task CreateUser(string user, string pass)
         {
-            if (!IsAnExistingUser(userName))
+            await _userRepository.CreateAsync(user, pass);
+        }
+        
+        public async Task<string> GetUserRole(string userName)
+        {
+            
+            if (!await IsAnExistingUser(userName))
             {
                 return string.Empty;
             }

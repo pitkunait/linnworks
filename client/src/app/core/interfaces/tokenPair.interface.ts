@@ -1,4 +1,4 @@
 export interface TokenPair {
-    readonly access: string;
-    readonly refresh: string;
+    readonly accessToken: string;
+    readonly refreshToken: string;
 }

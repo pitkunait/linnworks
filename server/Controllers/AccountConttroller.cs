@@ -31,36 +31,57 @@ namespace LinnworksTechTest.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public ActionResult Login([FromBody] LoginRequest request)
+        public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            if (!_userService.IsValidUserCredentials(request.UserName, request.Password))
+            if (!await _userService.IsValidUserCredentials(request.Username, request.Password))
             {
                 return Unauthorized();
             }
-
-            var role = _userService.GetUserRole(request.UserName);
+            
+            var role = await _userService.GetUserRole(request.Username);
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name,request.UserName),
+                new Claim(ClaimTypes.Name,request.Username),
                 new Claim(ClaimTypes.Role, role)
             };
 
-            var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
-            _logger.LogInformation($"User [{request.UserName}] logged in the system.");
+            var jwtResult = _jwtAuthManager.GenerateTokens(request.Username, claims, DateTime.Now);
+            _logger.LogInformation($"User [{request.Username}] logged in the system.");
             return Ok(new LoginResult
             {
-                UserName = request.UserName,
+                UserName = request.Username,
                 Role = role,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString
             });
         }
+        
+        
+        [AllowAnonymous]
+        [HttpPost("signup")]
+        public async Task<ActionResult> Register([FromBody] LoginRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
 
+            try
+            {
+                await _userService.CreateUser(request.Username, request.Password);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+        }
+        
         [HttpGet("user")]
         [Authorize]
         public ActionResult GetCurrentUser()
@@ -77,9 +98,6 @@ namespace LinnworksTechTest.Controllers
         [Authorize]
         public ActionResult Logout()
         {
-            // optionally "revoke" JWT token on the server side --> add the current token to a block-list
-            // https://github.com/auth0/node-jsonwebtoken/issues/375
-
             var userName = User.Identity?.Name;
             _jwtAuthManager.RemoveRefreshTokenByUserName(userName);
             _logger.LogInformation($"User [{userName}] logged out the system.");
@@ -119,12 +137,12 @@ namespace LinnworksTechTest.Controllers
 
         [HttpPost("impersonation")]
         [Authorize(Roles = UserRoles.Admin)]
-        public ActionResult Impersonate([FromBody] ImpersonationRequest request)
+        public async Task<ActionResult> Impersonate([FromBody] ImpersonationRequest request)
         {
             var userName = User.Identity?.Name;
             _logger.LogInformation($"User [{userName}] is trying to impersonate [{request.UserName}].");
 
-            var impersonatedRole = _userService.GetUserRole(request.UserName);
+            var impersonatedRole = await _userService.GetUserRole(request.UserName);
             if (string.IsNullOrWhiteSpace(impersonatedRole))
             {
                 _logger.LogInformation($"User [{userName}] failed to impersonate [{request.UserName}] due to the target user not found.");
@@ -156,7 +174,7 @@ namespace LinnworksTechTest.Controllers
         }
 
         [HttpPost("stop-impersonation")]
-        public ActionResult StopImpersonation()
+        public async Task<ActionResult> StopImpersonation()
         {
             var userName = User.Identity?.Name;
             var originalUserName = User.FindFirst("OriginalUserName")?.Value;
@@ -166,7 +184,7 @@ namespace LinnworksTechTest.Controllers
             }
             _logger.LogInformation($"User [{originalUserName}] is trying to stop impersonate [{userName}].");
 
-            var role = _userService.GetUserRole(originalUserName);
+            var role = await _userService.GetUserRole(originalUserName);
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,originalUserName),
@@ -190,7 +208,7 @@ namespace LinnworksTechTest.Controllers
     {
         [Required]
         [JsonPropertyName("username")]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
         [Required]
         [JsonPropertyName("password")]

@@ -1,7 +1,7 @@
 <mat-card class="signin-content mat-elevation-z4">
     <mat-card-content>
         <form (ngSubmit)="onSubmit()" [formGroup]="form">
-            <p>Login to {{appName}}</p>
+            <p>Login</p>
             <mat-form-field class="full-width-input">
                 <input formControlName="username" matInput placeholder="Username" required>
                 <mat-error *ngIf="isFieldInvalid('username')">

@@ -25,7 +25,7 @@ namespace LinnworksTechTest.Authentication
     public class JwtAuthManager : IJwtAuthManager
     {
         public IImmutableDictionary<string, RefreshToken> UsersRefreshTokensReadOnlyDictionary => _usersRefreshTokens.ToImmutableDictionary();
-        private readonly ConcurrentDictionary<string, RefreshToken> _usersRefreshTokens;  // can store in a database or a distributed cache
+        private readonly ConcurrentDictionary<string, RefreshToken> _usersRefreshTokens;
         private readonly JwtTokenConfig _jwtTokenConfig;
         private readonly byte[] _secret;
 
@@ -35,8 +35,7 @@ namespace LinnworksTechTest.Authentication
             _usersRefreshTokens = new ConcurrentDictionary<string, RefreshToken>();
             _secret = Encoding.ASCII.GetBytes(jwtTokenConfig.Secret);
         }
-
-        // optional: clean up expired refresh tokens
+        
         public void RemoveExpiredRefreshTokens(DateTime now)
         {
             var expiredTokens = _usersRefreshTokens.Where(x => x.Value.ExpireAt < now).ToList();
@@ -45,8 +44,7 @@ namespace LinnworksTechTest.Authentication
                 _usersRefreshTokens.TryRemove(expiredToken.Key, out _);
             }
         }
-
-        // can be more specific to ip, user agent, device name, etc.
+        
         public void RemoveRefreshTokenByUserName(string userName)
         {
             var refreshTokens = _usersRefreshTokens.Where(x => x.Value.UserName == userName).ToList();
@@ -100,7 +98,7 @@ namespace LinnworksTechTest.Authentication
                 throw new SecurityTokenException("Invalid token");
             }
 
-            return GenerateTokens(userName, principal.Claims.ToArray(), now); // need to recover the original claims
+            return GenerateTokens(userName, principal.Claims.ToArray(), now);
         }
 
         public (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token)
@@ -147,8 +145,7 @@ namespace LinnworksTechTest.Authentication
     public class RefreshToken
     {
         [JsonPropertyName("username")]
-        public string UserName { get; set; }    // can be used for usage tracking
-        // can optionally include other metadata, such as user agent, ip address, device name, and so on
+        public string UserName { get; set; }
 
         [JsonPropertyName("tokenString")]
         public string TokenString { get; set; }

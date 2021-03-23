@@ -58,7 +58,7 @@ export class ApiInterceptor implements HttpInterceptor {
 
     private refreshAccessToken(): Observable<any> {
         return this.httpClient
-            .post(`${environment.baseUrl}token/refresh/`, { refresh: this.tokenService.getRefreshToken() });
+            .post(`${environment.baseUrl}/auth/refresh/`, { refresh: this.tokenService.getRefreshToken() });
     }
 
     private addAuthenticationToken(request: HttpRequest<any>): HttpRequest<any> {
