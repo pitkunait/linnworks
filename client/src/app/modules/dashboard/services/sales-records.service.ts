@@ -29,17 +29,22 @@ export class SalesRecordsService {
 
     async getSalesRecords(page: number = 1): Promise<SalesRecordsResponse> {
         this.isBusy = true;
-        const records = await this.http.get(`${environment.baseUrl}/sales`, {
-            params: {
-                page: page.toString(),
-                sortBy: this.sortBy,
-                direction: this.direction,
-                country: this.country,
-                year: this.year,
-            },
-        }).toPromise();
-        this.isBusy = false;
-        return records as SalesRecordsResponse;
+        try {
+            const records = await this.http.get(`${environment.baseUrl}/sales`, {
+                params: {
+                    page: page.toString(),
+                    sortBy: this.sortBy,
+                    direction: this.direction,
+                    country: this.country,
+                    year: this.year,
+                },
+            }).toPromise();
+            return records as SalesRecordsResponse;
+        } catch ( err ) {
+            return;
+        } finally {
+            this.isBusy = false;
+        }
     }
 
     async insertSalesRecords(salesRecords: SalesRecord[]) {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,11 @@ namespace Server.Repositories.SalesRecords
             var results = new PagedResult<SalesRecord>();
             using (var conn = GetOpenConnection())
             {
-                var sql = @"SELECT *
+                var sql = @"SELECT COUNT(*)
+                            FROM SalesRecords
+                            WHERE (@Country IS NULL OR Country = @Country) AND (@Year IS NULL OR YEAR(OrderDate) = @Year);
+
+                            SELECT *
                             FROM SalesRecords
                             WHERE (@Country IS NULL OR Country = @Country) AND (@Year IS NULL OR YEAR(OrderDate) = @Year)
                             ORDER BY
@@ -58,9 +63,7 @@ namespace Server.Repositories.SalesRecords
                             OFFSET @Offset ROWS
                             FETCH NEXT @PageSize ROWS ONLY;
                            
-                            SELECT COUNT(*)
-                            FROM SalesRecords
-                            WHERE (@Country IS NULL OR Country = @Country) AND (@Year IS NULL OR YEAR(OrderDate) = @Year);
+                           
                             
                             SELECT SUM(TotalProfit)
                             FROM SalesRecords
@@ -77,9 +80,15 @@ namespace Server.Repositories.SalesRecords
                         Year = year
                     });
 
-                results.Items = multi.Read<SalesRecord>().ToList();
-                results.TotalCount = multi.ReadFirst<int>();
-                results.TotalProfit = multi.ReadFirst<float>();
+                results.TotalCount = await multi.ReadFirstAsync<int>();
+
+                if (results.TotalCount > 0)
+                {   
+                    var items = await multi.ReadAsync<SalesRecord>();
+                    results.Items = items.ToList();
+                    results.TotalProfit = await multi.ReadFirstAsync<decimal>();
+                }
+                
                 results.Page = page;
                 results.PageSize = pageSize;
                 results.HasNext = results.TotalCount > page * pageSize;
@@ -96,7 +105,7 @@ namespace Server.Repositories.SalesRecords
                 return await conn.QueryAsync<string>(sql);
             }
         }
-        
+
         public async Task DeleteAsync(List<int> idList)
         {
             using (var conn = GetOpenConnection())
