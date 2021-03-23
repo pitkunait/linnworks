@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SalesRecordsService } from '../../services/sales-records.service';
-import { SalesRecord } from '../../../../core/interfaces/salesRecord';
+import { SalesRecord } from '../../../../core/interfaces/salesRecord.interface';
 
 
 @Component({

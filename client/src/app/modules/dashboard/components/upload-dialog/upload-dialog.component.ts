@@ -4,7 +4,7 @@ import Papa from 'papaparse';
 import { camelCase } from 'lodash';
 import { SalesRecordsService } from '../../services/sales-records.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
-import { SalesRecord } from '../../../../core/interfaces/salesRecord';
+import { SalesRecord } from '../../../../core/interfaces/salesRecord.interface';
 
 
 @Component({

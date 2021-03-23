@@ -1,13 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { SalesRecordsService } from './services/sales-records.service';
-import { SalesRecord } from '../../core/interfaces/salesRecord';
+import { SalesRecord } from '../../core/interfaces/salesRecord.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { DetailsDialogComponent } from './components/details-dialog/details-dialog.component';
 import { AgGridAngular } from 'ag-grid-angular';
 import { UploadDialogComponent } from './components/upload-dialog/upload-dialog.component';
-import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { TokenService } from '../../core/services/token.service';
 
 
 @Component({

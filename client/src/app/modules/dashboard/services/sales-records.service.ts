@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import { SalesRecord } from '../../../core/interfaces/salesRecord';
+import { SalesRecord } from '../../../core/interfaces/salesRecord.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { TokenService } from '../../../core/services/token.service';
