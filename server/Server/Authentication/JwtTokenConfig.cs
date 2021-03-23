@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace LinnworksTechTest.Authentication
+namespace Server.Authentication
 {
     public class JwtTokenConfig
     {

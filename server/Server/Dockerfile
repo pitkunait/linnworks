@@ -4,4 +4,4 @@ COPY *.csproj ./
 RUN dotnet restore
 COPY . ./
 RUN dotnet publish -c Release -o out
-ENTRYPOINT ["dotnet", "./out/LinnworksTechTest.dll"]
+ENTRYPOINT ["dotnet", "./out/Server.dll"]

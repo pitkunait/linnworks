@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using CsvHelper.Configuration.Attributes;
 
-namespace LinnworksTechTest.Repositories.SalesRecords
+namespace Server.Repositories.SalesRecords
 {
     public class SalesRecord
     {

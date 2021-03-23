@@ -1,13 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using FastMember;
 using Dapper.Contrib.Extensions;
+using FastMember;
 
-namespace LinnworksTechTest.Repositories.SalesRecords
+namespace Server.Repositories.SalesRecords
 {
     public class SalesRecordsRepository : SqlConnectionProvider
     {

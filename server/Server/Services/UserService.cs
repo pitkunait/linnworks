@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using LinnworksTechTest.Controllers;
 using LinnworksTechTest.Repositories.Users;
 using Microsoft.Extensions.Logging;
 
-namespace LinnworksTechTest.Services
+namespace Server.Services
 {
     public interface IUserService
     {

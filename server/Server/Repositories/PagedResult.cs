@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LinnworksTechTest.Repositories
+namespace Server.Repositories
 {
     public class PagedResult<T>
     {

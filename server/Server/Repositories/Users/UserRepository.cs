@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Dapper;
+using Server.Repositories;
 
 namespace LinnworksTechTest.Repositories.Users
 {

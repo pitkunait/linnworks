@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LinnworksTechTest.Repositories.SalesRecords;
-using LinnworksTechTest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Server.Repositories.SalesRecords;
+using Server.Services;
 
-
-namespace LinnworksTechTest.Controllers
+namespace Server.Controllers
 {
     [ApiController]
     [Authorize]

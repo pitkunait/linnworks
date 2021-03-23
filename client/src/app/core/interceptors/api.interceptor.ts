@@ -18,12 +18,6 @@ export class ApiInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler): any {
 
-        if (!req.headers.has('Content-Type')) {
-            req = req.clone({
-                headers: req.headers.set('Content-Type', 'application/json'),
-            });
-        }
-
         req = this.addAuthenticationToken(req);
 
         return next
@@ -66,13 +60,11 @@ export class ApiInterceptor implements HttpInterceptor {
             return request;
         }
         if (request.url.match(environment.baseUrl)) {
-            // console.log(`Setting token ${this.tokenService.getAccessToken()}`);
             return request.clone({
                 headers: request.headers
-                    .append(this.AUTH_HEADER, 'Bearer ' + this.tokenService.getAccessToken())
+                    .append(this.AUTH_HEADER, 'Bearer ' + this.tokenService.getAccessToken()),
             });
         }
-
 
         return request;
     }

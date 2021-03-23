@@ -48,9 +48,10 @@ export class UploadDialogComponent implements OnInit {
     }
 
     public uploadFile = async () => {
-        const formData = new FormData();
-        formData.append('file', this.selectedFile, this.selectedFile.name);
-        this.http.post('http://localhost:5000/api/sales/upload', formData, { reportProgress: true, observe: 'events' })
+        // const formData = new FormData();
+        // formData.append('file', this.selectedFile, this.selectedFile.name);
+        // this.http.post('http://localhost:5000/api/sales/upload', formData, { reportProgress: true, observe: 'events' })
+        this.salesRecordsService.uploadFile(this.selectedFile)
             .subscribe(event => {
                 if (event.type === HttpEventType.UploadProgress) {
                     this.progress = Math.round(100 * event.loaded / event.total);

@@ -4,14 +4,15 @@ using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using LinnworksTechTest.Authentication;
-using LinnworksTechTest.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Server.Authentication;
+using Server.Services;
 
-namespace LinnworksTechTest.Controllers
+namespace Server.Controllers
 {
     [ApiController]
     [Authorize]
@@ -76,7 +77,7 @@ namespace LinnworksTechTest.Controllers
                 await _userService.CreateUser(request.Username, request.Password);
                 return Ok();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return BadRequest();
             }

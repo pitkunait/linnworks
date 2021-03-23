@@ -1,9 +1,7 @@
 using System;
 using System.Text;
 using LinnworksTechTest.Authentication;
-using LinnworksTechTest.Repositories.SalesRecords;
 using LinnworksTechTest.Repositories.Users;
-using LinnworksTechTest.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,8 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Server.Authentication;
+using Server.Repositories.SalesRecords;
+using Server.Services;
 
-namespace LinnworksTechTest
+namespace Server
 {
     public class Startup
     {

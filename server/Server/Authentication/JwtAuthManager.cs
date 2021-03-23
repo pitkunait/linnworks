@@ -7,10 +7,10 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
+using LinnworksTechTest.Authentication;
 using Microsoft.IdentityModel.Tokens;
 
-
-namespace LinnworksTechTest.Authentication
+namespace Server.Authentication
 {
     public interface IJwtAuthManager
     {

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Server.Authentication;
 
 namespace LinnworksTechTest.Authentication
 {

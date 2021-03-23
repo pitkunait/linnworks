@@ -1,16 +1,15 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CsvHelper;
 using LinnworksTechTest.Repositories;
-using LinnworksTechTest.Repositories.SalesRecords;
 using Microsoft.AspNetCore.Http;
+using Server.Repositories;
+using Server.Repositories.SalesRecords;
 
-namespace LinnworksTechTest.Services
+namespace Server.Services
 {
     public class SalesRecordsService
     {

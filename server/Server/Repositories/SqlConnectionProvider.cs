@@ -1,7 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace LinnworksTechTest.Repositories
+namespace Server.Repositories
 {
     public abstract class SqlConnectionProvider
     {
