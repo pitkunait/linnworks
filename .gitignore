@@ -5,3 +5,5 @@ obj/
 server/packages/
 riderModule.iml
 server/_ReSharper.Caches/
+*/.DS_Store
+.DS_Store
