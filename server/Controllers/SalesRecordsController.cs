@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LinnworksTechTest.Repositories.SalesRecords;
 using LinnworksTechTest.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace LinnworksTechTest.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/sales")]
     public class SalesRecordsController : ControllerBase
     {

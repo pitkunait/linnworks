@@ -66,7 +66,7 @@ export class ApiInterceptor implements HttpInterceptor {
             return request;
         }
         if (request.url.match(environment.baseUrl)) {
-            console.log(`Setting token ${this.tokenService.getAccessToken()}`);
+            // console.log(`Setting token ${this.tokenService.getAccessToken()}`);
             return request.clone({
                 headers: request.headers
                     .append(this.AUTH_HEADER, 'Bearer ' + this.tokenService.getAccessToken())
